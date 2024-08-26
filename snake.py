@@ -26,21 +26,29 @@ food_char = "@"
 snake_body = [(x, y)]  # Initial position of the snake's head
 opposite_directions = {"up": "down", "down": "up", "left": "right", "right": "left"}
 display = []
-food_count = 30
+food_count = 10
 score = 0 
 max_score = food_count
+food_per_time = True
 
 def change_direction(new_direction):
     global direction
     if new_direction != opposite_directions[direction]:
         direction = new_direction
 
+def place_food():
+    global food_count, display
+    x_val = random.randint(0, x_max - 1)
+    y_val = random.randint(0, y_max - 1)
+
+    if display[y_val][x_val] != food_char:
+        display[y_val][x_val] = food_char
+        food_count -= 1
+
 def move_snake():
-    global x, y, snake_body, score
+    global x, y, snake_body, score, display, length
 
-    while True:
-        os.system(clear_command)
-
+    while score < max_score:
         dx, dy = 0, 0
         if direction == "up":
             dy = -1
@@ -60,40 +68,40 @@ def move_snake():
 
         if display[y][x] == food_char:
             score += 1
+            length += 1
+            place_food()
+
+        if display[y][x] == runner_char:
+            break
 
         # Remove the last part of the snake's tail if the snake exceeds its length
         if len(snake_body) > length:
             tail_x, tail_y = snake_body.pop()
             display[tail_y][tail_x] = background_char  # Clear the last position
 
-        if score == max_score:
-            break
-
         # Update the display with the snake's current position
         for segment in snake_body:
             display[segment[1]][segment[0]] = runner_char
 
+        os.system(clear_command)
         print("\n".join("".join(line) for line in display))
-        print(f"Score: {score}")
+        print(f"Score: {score}/{max_score}")
         time.sleep(0.1)
 
 def splash():
     os.system(clear_command)
     print(logo)
-    print("Loading...")
-    time.sleep(4)
+    time.sleep(2)
 
 def main():
     global display, food_count
     display = [[background_char for _ in range(x_max)] for _ in range(y_max)]
 
-    while food_count > 0:
-        x_val = random.randint(0, x_max - 1)
-        y_val = random.randint(0, y_max - 1)
-
-        if display[y_val][x_val] != food_char:
-            display[y_val][x_val] = food_char
-            food_count -= 1
+    if not food_per_time:
+        while food_count > 0:
+            place_food()
+    else:
+        place_food()
 
     keyboard.add_hotkey('8', change_direction, args=("up",))
     keyboard.add_hotkey('4', change_direction, args=("left",))
@@ -105,5 +113,6 @@ if __name__ == "__main__":
         splash()
         main()
         move_snake()
+        print("Game Over!!!")
     except KeyboardInterrupt:
         print("Exit")
