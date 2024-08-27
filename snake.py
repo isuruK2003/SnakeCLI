@@ -6,18 +6,25 @@ import random
 # Global variables
 
 logo = """
-   _____             _        
-  / ____|           | |       
- | (___  _ __   __ _| | _____ 
-  \___ \| '_ \ / _` | |/ / _ \\
-  ____) | | | | (_| |   <  __/
- |_____/|_| |_|\__,_|_|\_\___|
-                                                        
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║                                                            ║
+║   ________  ________   ________  ___  __    _______        ║
+║  |\   ____\|\   ___  \|\   __  \|\  \|\  \ |\  ___ \       ║
+║  \ \  \___|\ \  \\\\ \  \ \  \|\  \ \  \/  /|\ \   __/|      ║
+║   \ \_____  \ \  \\\\ \  \ \   __  \ \   ___  \ \  \_|/__    ║
+║    \|____|\  \ \  \\\\ \  \ \  \ \  \ \  \\\\ \  \ \  \_|\ \   ║
+║      ____\_\  \ \__\\\\ \__\ \__\ \__\ \__\\\\ \__\ \_______\  ║
+║     |\_________\|__| \|__|\|__|\|__|\|__| \|__|\|_______|  ║
+║     \|_________|                                           ║
+║                                                            ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
 """
 
 x_max, y_max = 50, 25
 x, y = 25, 12
-length = 10
+length = 15
 direction = "down"
 clear_command = "cls" if os.name == "nt" else "clear"
 runner_char = "█"
@@ -26,10 +33,7 @@ food_char = "@"
 snake_body = [(x, y)]  # Initial position of the snake's head
 opposite_directions = {"up": "down", "down": "up", "left": "right", "right": "left"}
 display = []
-food_count = 10
-score = 0 
-max_score = food_count
-food_per_time = True
+score = 0
 
 def change_direction(new_direction):
     global direction
@@ -38,17 +42,19 @@ def change_direction(new_direction):
 
 def place_food():
     global food_count, display
+
     x_val = random.randint(0, x_max - 1)
     y_val = random.randint(0, y_max - 1)
 
-    if display[y_val][x_val] != food_char:
-        display[y_val][x_val] = food_char
-        food_count -= 1
+    if (x_val, y_val) in snake_body:
+        place_food()
+
+    display[y_val][x_val] = food_char
 
 def move_snake():
     global x, y, snake_body, score, display, length
 
-    while score < max_score:
+    while True:
         dx, dy = 0, 0
         if direction == "up":
             dy = -1
@@ -85,8 +91,8 @@ def move_snake():
 
         os.system(clear_command)
         print("\n".join("".join(line) for line in display))
-        print(f"Score: {score}/{max_score}")
-        time.sleep(0.1)
+        print(f"Score: {score}")
+        time.sleep(0.05)
 
 def splash():
     os.system(clear_command)
@@ -97,11 +103,7 @@ def main():
     global display, food_count
     display = [[background_char for _ in range(x_max)] for _ in range(y_max)]
 
-    if not food_per_time:
-        while food_count > 0:
-            place_food()
-    else:
-        place_food()
+    place_food()
 
     keyboard.add_hotkey('8', change_direction, args=("up",))
     keyboard.add_hotkey('4', change_direction, args=("left",))
@@ -113,6 +115,6 @@ if __name__ == "__main__":
         splash()
         main()
         move_snake()
-        print("Game Over!!!")
+        print("Game Over!")
     except KeyboardInterrupt:
         print("Exit")
