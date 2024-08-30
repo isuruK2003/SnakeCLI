@@ -22,22 +22,24 @@ logo = """
 ╚════════════════════════════════════════════════════════════╝
 """
 
-x_max, y_max = 50, 25
-x, y = 25, 12
-length = 15
-direction = "down"
+x_max = 50
+y_max = 25
+x = int(x_max / 2)
+y = int(y_max / 2)
+length = int(y_max / 2)
 clear_command = "cls" if os.name == "nt" else "clear"
 runner_char = "█"
 background_char = "░"
 food_char = "@"
 snake_body = [(x, y)]  # Initial position of the snake's head
-opposite_directions = {"up": "down", "down": "up", "left": "right", "right": "left"}
+directions = {"up": "down", "down": "up", "left": "right", "right": "left"}
+direction = random.choice(list(directions.keys()))
 display = []
 score = 0
 
 def change_direction(new_direction):
     global direction
-    if new_direction != opposite_directions[direction]:
+    if new_direction != directions[direction]:
         direction = new_direction
 
 def place_food():
@@ -72,11 +74,14 @@ def move_snake():
         # Insert new head position at the front of the snake body
         snake_body.insert(0, (x, y))
 
+        # snake eat food, length of the snake is increased by one unit4
+        # score increased by one and new food is placed
         if display[y][x] == food_char:
             score += 1
             length += 1
             place_food()
 
+        # If snake hits itself, end the game
         if display[y][x] == runner_char:
             break
 
