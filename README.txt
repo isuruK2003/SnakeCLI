@@ -6,4 +6,3 @@
  |_____/|_| |_|\__,_|_|\_\___|
 
 A simple python script to play the classic snake game in command line.
-(Note: "keyboard" module is required to run this python script)
